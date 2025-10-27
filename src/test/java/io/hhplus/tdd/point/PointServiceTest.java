@@ -48,7 +48,7 @@ public class PointServiceTest {
 
         // When & Then
         assertThrows(IllegalArgumentException.class, () -> {
-            pointRepository.save(userId, amount);
+            pointService.chargePoint(userId, amount);
         });
 
 
