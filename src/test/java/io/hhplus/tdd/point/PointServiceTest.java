@@ -17,7 +17,9 @@ public class PointServiceTest {
         // Given
         UserPointTable userPointTable = new UserPointTable();
         PointHistoryTable pointHistoryTable = new PointHistoryTable();
-        PointService pointService = new PointService(userPointTable, pointHistoryTable);
+
+        PointRepository pointRepository = new PointRepository(userPointTable, pointHistoryTable);
+        PointService pointService = new PointService(pointRepository);
 
         long userId = 1L;
         long amount = 5000L;
