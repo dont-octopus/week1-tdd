@@ -98,4 +98,27 @@ public class PointServiceTest {
         // Then
         assertEquals(expected.point(), actual.point());
     }
+
+    @Test
+    @DisplayName("포인트 사용 성공 테스트")
+    void use_point_success(){
+
+        // Given
+        PointRepository pointRepository = mock(PointRepository.class);
+        PointService pointService = new PointService(pointRepository);
+
+        long userId = 1L;
+        long amount = 3000L;
+
+        UserPoint userInfo = new UserPoint(userId, 5000L, System.currentTimeMillis());
+        when(pointRepository.selectById(userId)).thenReturn(userInfo);
+        long beforePoint = userInfo.point() - amount;
+
+        // When
+        UserPoint afterPoint = pointService.usePoint(userId, amount);
+
+        // Then
+        assertEquals(beforePoint, afterPoint.point());
+
+    }
 }
