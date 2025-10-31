@@ -35,6 +35,7 @@ public class PointService {
     public UserPoint usePoint(long userId, long amount) {
         UserPoint beforePoint = pointRepository.selectById(userId);
         long afterPoint = beforePoint.point() - amount;
-        return new UserPoint(userId, afterPoint, System.currentTimeMillis());
+        UserPoint updatedInfo = pointRepository.save(userId, afterPoint);
+        return updatedInfo;
     }
 }

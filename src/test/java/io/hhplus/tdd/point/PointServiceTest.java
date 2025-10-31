@@ -113,6 +113,9 @@ public class PointServiceTest {
         UserPoint userInfo = new UserPoint(userId, 5000L, System.currentTimeMillis());
         when(pointRepository.selectById(userId)).thenReturn(userInfo);
         long beforePoint = userInfo.point() - amount;
+        when(pointRepository.save(userId, beforePoint)).thenReturn(
+                new UserPoint(userId, beforePoint, System.currentTimeMillis())
+        );
 
         // When
         UserPoint afterPoint = pointService.usePoint(userId, amount);
@@ -120,7 +123,7 @@ public class PointServiceTest {
         // Then
         // 포인트 사용 로직 테스트
         assertEquals(beforePoint, afterPoint.point());
-        // 사용 후에 대한 정보 DB에 저장
+        // 사용 후에 대한 정보 DB에 저장 테스트
         verify(pointRepository, times(1)).save(userId, afterPoint.point());
 
     }
