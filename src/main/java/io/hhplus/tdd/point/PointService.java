@@ -33,8 +33,14 @@ public class PointService {
     }
 
     public UserPoint usePoint(long userId, long amount) {
-        // 사용한 포인트 계산
+
         UserPoint beforePoint = pointRepository.selectById(userId);
+        // 잔액이 사용하려는 포인트 보다 적은 경우 예외
+        if(beforePoint.point() < amount) {
+            throw new IllegalArgumentException("잔액이 부족합니다");
+        }
+
+        // 사용한 포인트 계산
         long afterPoint = beforePoint.point() - amount;
         // 사용 후 정보 DB에 저장
         UserPoint updatedInfo = pointRepository.save(userId, afterPoint);
