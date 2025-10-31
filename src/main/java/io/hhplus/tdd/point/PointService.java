@@ -34,6 +34,10 @@ public class PointService {
 
     public UserPoint usePoint(long userId, long amount) {
 
+        if(amount <= 0) {
+            throw new IllegalArgumentException("0이하 금액은 입력할 수 없습니다.");
+        }
+
         UserPoint beforePoint = pointRepository.selectById(userId);
         // 잔액이 사용하려는 포인트 보다 적은 경우 예외
         if(beforePoint.point() < amount) {
