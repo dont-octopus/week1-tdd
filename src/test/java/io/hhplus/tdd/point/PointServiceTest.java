@@ -129,4 +129,22 @@ public class PointServiceTest {
         verify(pointRepository, times(1)).saveHistory(userId, amount, TransactionType.USE);
 
     }
+
+    @Test
+    @DisplayName("포인트 사용 실패 테스트 - 잔액 부족인 경우")
+    void use_point_fail_if_no_money() {
+
+        // Given
+        PointRepository pointRepository = mock(PointRepository.class);
+        PointService pointService = new PointService(pointRepository);
+
+        long userId = 1L;
+
+        when(pointRepository.selectById(userId)).thenReturn(UserPoint.empty(userId));
+
+        // When & Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            pointService.usePoint(userId, 2000L);
+        });
+    }
 }
