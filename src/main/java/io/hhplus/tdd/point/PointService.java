@@ -2,6 +2,7 @@ package io.hhplus.tdd.point;
 
 import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
+import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,5 +30,11 @@ public class PointService {
     public UserPoint selectPoint(long userId){
         UserPoint currentInfo = pointRepository.selectById(userId);
         return currentInfo;
+    }
+
+    public UserPoint usePoint(long userId, long amount) {
+        UserPoint beforePoint = pointRepository.selectById(userId);
+        long afterPoint = beforePoint.point() - amount;
+        return new UserPoint(userId, afterPoint, System.currentTimeMillis());
     }
 }
