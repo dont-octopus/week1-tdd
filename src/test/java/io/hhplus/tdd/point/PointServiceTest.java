@@ -146,5 +146,24 @@ public class PointServiceTest {
         assertThrows(IllegalArgumentException.class, () -> {
             pointService.usePoint(userId, 2000L);
         });
+
+    }
+
+    @Test
+    @DisplayName("포인트 사용 실패 테스트 - 마이너스 금액인 경우")
+    void use_point_fail_if_minus(){
+
+        // Given
+        PointRepository pointRepository = mock(PointRepository.class);
+        PointService pointService = new PointService(pointRepository);
+
+        long userId = 1L;
+
+        when(pointRepository.selectById(userId)).thenReturn(UserPoint.empty(userId));
+
+        // When & Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            pointService.usePoint(userId, -1000L);
+        });
     }
 }
