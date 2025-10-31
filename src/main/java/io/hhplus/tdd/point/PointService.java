@@ -33,9 +33,14 @@ public class PointService {
     }
 
     public UserPoint usePoint(long userId, long amount) {
+        // 사용한 포인트 계산
         UserPoint beforePoint = pointRepository.selectById(userId);
         long afterPoint = beforePoint.point() - amount;
+        // 사용 후 정보 DB에 저장
         UserPoint updatedInfo = pointRepository.save(userId, afterPoint);
+        // 사용 내역 DB에 저장
+        pointRepository.saveHistory(userId, amount, TransactionType.USE);
+
         return updatedInfo;
     }
 }
