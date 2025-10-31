@@ -25,4 +25,9 @@ public class PointService {
 
         return updatedPoint;
     }
+
+    public UserPoint selectPoint(long userId){
+        UserPoint currentInfo = pointRepository.selectById(userId);
+        return currentInfo;
+    }
 }

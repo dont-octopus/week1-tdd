@@ -93,7 +93,7 @@ public class PointServiceTest {
         when(pointRepository.selectById(userId)).thenReturn(expected);
 
         // When
-        UserPoint actual = pointService.selectById(userId);
+        UserPoint actual = pointService.selectPoint(userId);
 
         // Then
         assertEquals(expected.point(), actual.point());
