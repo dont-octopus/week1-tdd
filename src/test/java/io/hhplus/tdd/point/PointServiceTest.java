@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
 
 public class PointServiceTest {
 
@@ -50,8 +52,29 @@ public class PointServiceTest {
         assertThrows(IllegalArgumentException.class, () -> {
             pointService.chargePoint(userId, amount);
         });
+    }
 
+    @Test
+    @DisplayName("포인트 충전 내역 저장 테스트")
+    void test_save_history(){
 
+        // Given
+        PointRepository pointRepository = mock(PointRepository.class);
+        PointService pointService = new PointService(pointRepository);
 
+        long userId = 1L;
+        long amount = 5000L;
+
+        // 1NPE 방지용 stub: selectById(1L)가 호출되면, 빈 객체를 반환
+        when(pointRepository.selectById(userId)).thenReturn(UserPoint.empty(userId));
+        // NPE 방지용 stub: save(1L, 5000L)가 호출되면, 5000점짜리 객체를 반환
+        when(pointRepository.save(userId, amount)).thenReturn(new UserPoint(userId, amount, System.currentTimeMillis()));
+
+        // When
+        pointService.chargePoint(userId, amount);
+
+        // Then
+        // saveHistory가 1번 호출되었는지 검증
+        verify(pointRepository, times(1)).saveHistory(userId, amount, TransactionType.CHARGE);
     }
 }
