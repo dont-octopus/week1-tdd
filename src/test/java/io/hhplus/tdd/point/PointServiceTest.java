@@ -118,7 +118,10 @@ public class PointServiceTest {
         UserPoint afterPoint = pointService.usePoint(userId, amount);
 
         // Then
+        // 포인트 사용 로직 테스트
         assertEquals(beforePoint, afterPoint.point());
+        // 사용 후에 대한 정보 DB에 저장
+        verify(pointRepository, times(1)).save(userId, afterPoint.point());
 
     }
 }
