@@ -3,6 +3,7 @@ package io.hhplus.tdd.point;
 import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 import io.hhplus.tdd.point.PointService;
+import org.apache.catalina.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -76,5 +77,25 @@ public class PointServiceTest {
         // Then
         // saveHistory가 1번 호출되었는지 검증
         verify(pointRepository, times(1)).saveHistory(userId, amount, TransactionType.CHARGE);
+    }
+
+    @Test
+    @DisplayName("포인트 조회 성공 테스트")
+    void select_point_success(){
+
+        // Given
+        PointRepository pointRepository = mock(PointRepository.class);
+        PointService pointService = new PointService(pointRepository);
+
+        long userId = 1L;
+
+        UserPoint expected = new UserPoint(userId, 1000L, System.currentTimeMillis());
+        when(pointRepository.selectById(userId)).thenReturn(expected);
+
+        // When
+        UserPoint actual = pointService.selectById(userId);
+
+        // Then
+        assertEquals(expected.point(), actual.point());
     }
 }
