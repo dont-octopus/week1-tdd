@@ -22,4 +22,8 @@ public class PointRepository {
     public UserPoint selectById(long userId) {
         return userPointTable.selectById(userId);
     }
+
+    public void saveHistory(long userId, long amount, TransactionType type) {
+        pointHistoryTable.insert(userId, amount, type, System.currentTimeMillis());
+    }
 }

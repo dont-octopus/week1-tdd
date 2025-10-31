@@ -17,9 +17,12 @@ public class PointService {
         if(amount < 0) {
             throw new IllegalArgumentException("음수는 입력할 수 없습니다.");
         }
+
         long currentPoint = pointRepository.selectById(userId).point();
         long chargedPoint = currentPoint+ amount;
         UserPoint updatedPoint = pointRepository.save(userId, chargedPoint);
+        pointRepository.saveHistory(userId, amount, TransactionType.CHARGE); // 기록 저장
+
         return updatedPoint;
     }
 }
