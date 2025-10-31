@@ -125,6 +125,8 @@ public class PointServiceTest {
         assertEquals(beforePoint, afterPoint.point());
         // 사용 후에 대한 정보 DB에 저장 테스트
         verify(pointRepository, times(1)).save(userId, afterPoint.point());
+        // 사용 기록 DB에 저장 테스트
+        verify(pointRepository, times(1)).saveHistory(userId, amount, TransactionType.USE);
 
     }
 }
