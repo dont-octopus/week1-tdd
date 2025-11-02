@@ -5,6 +5,8 @@ import io.hhplus.tdd.database.UserPointTable;
 import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PointService {
 
@@ -53,4 +55,8 @@ public class PointService {
 
         return updatedInfo;
     }
+    public List<PointHistory> getPointHistory(long userId) {
+        return pointRepository.findAllHistoriesByUserId(userId);
+    }
+
 }
