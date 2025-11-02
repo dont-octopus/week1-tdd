@@ -16,6 +16,12 @@ public class PointService {
        this.pointRepository = pointRepository;;
     }
 
+    /**
+     * 포인트 충전
+     * @param userId
+     * @param amount
+     * @return
+     */
     public UserPoint chargePoint(long userId, long amount) {
         if(amount < 0) {
             throw new IllegalArgumentException("음수는 입력할 수 없습니다.");
@@ -29,11 +35,21 @@ public class PointService {
         return updatedPoint;
     }
 
+    /**
+     * 특정 유저의 포인트 조회
+     * @param userId
+     * @return
+     */
     public UserPoint selectPoint(long userId){
-        UserPoint currentInfo = pointRepository.selectById(userId);
-        return currentInfo;
+        return pointRepository.selectById(userId);
     }
 
+    /**
+     * 포인트 사용
+     * @param userId
+     * @param amount
+     * @return
+     */
     public UserPoint usePoint(long userId, long amount) {
 
         if(amount <= 0) {
@@ -55,6 +71,12 @@ public class PointService {
 
         return updatedInfo;
     }
+
+    /**
+     * 특정 유저의 포인트 내역(기록) 조회
+     * @param userId
+     * @return
+     */
     public List<PointHistory> getPointHistory(long userId) {
         return pointRepository.findAllHistoriesByUserId(userId);
     }
