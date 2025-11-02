@@ -4,6 +4,7 @@ import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 import io.hhplus.tdd.point.PointService;
 import org.apache.catalina.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,19 +17,26 @@ import static org.mockito.Mockito.*;
 
 public class PointServiceTest {
 
+    private PointRepository pointRepository;
+    private PointService pointService;
+
+    @BeforeEach
+    void setUp() {
+        pointRepository = mock(PointRepository.class);
+        pointService = new PointService(pointRepository);
+    }
+
     @Test
     @DisplayName("포인트 충전 성공 테스트")
     void charge_point_success() {
 
         // Given
-        UserPointTable userPointTable = new UserPointTable();
-        PointHistoryTable pointHistoryTable = new PointHistoryTable();
-
-        PointRepository pointRepository = new PointRepository(userPointTable, pointHistoryTable);
-        PointService pointService = new PointService(pointRepository);
-
         long userId = 1L;
         long amount = 5000L;
+        UserPoint expected = new UserPoint(userId, amount, System.currentTimeMillis());
+
+        when(pointRepository.selectById(userId)).thenReturn(UserPoint.empty(userId));
+        when(pointRepository.save(userId, amount)).thenReturn(expected);
 
         // When
         UserPoint chargePoint = pointService.chargePoint(userId, amount);
@@ -42,12 +50,6 @@ public class PointServiceTest {
     void charge_point_fail_if_minus() {
 
         // Given
-        UserPointTable userPointTable = new UserPointTable();
-        PointHistoryTable pointHistoryTable = new PointHistoryTable();
-
-        PointRepository pointRepository = new PointRepository(userPointTable, pointHistoryTable);
-        PointService pointService = new PointService(pointRepository);
-
         long userId = 1L;
         long amount = -5000L;
 
@@ -62,9 +64,6 @@ public class PointServiceTest {
     void test_save_history(){
 
         // Given
-        PointRepository pointRepository = mock(PointRepository.class);
-        PointService pointService = new PointService(pointRepository);
-
         long userId = 1L;
         long amount = 5000L;
 
@@ -86,9 +85,6 @@ public class PointServiceTest {
     void select_point_success(){
 
         // Given
-        PointRepository pointRepository = mock(PointRepository.class);
-        PointService pointService = new PointService(pointRepository);
-
         long userId = 1L;
 
         UserPoint expected = new UserPoint(userId, 1000L, System.currentTimeMillis());
@@ -106,9 +102,6 @@ public class PointServiceTest {
     void use_point_success(){
 
         // Given
-        PointRepository pointRepository = mock(PointRepository.class);
-        PointService pointService = new PointService(pointRepository);
-
         long userId = 1L;
         long amount = 3000L;
 
@@ -129,7 +122,6 @@ public class PointServiceTest {
         verify(pointRepository, times(1)).save(userId, afterPoint.point());
         // 사용 기록 DB에 저장 테스트
         verify(pointRepository, times(1)).saveHistory(userId, amount, TransactionType.USE);
-
     }
 
     @Test
@@ -137,9 +129,6 @@ public class PointServiceTest {
     void use_point_fail_if_no_money() {
 
         // Given
-        PointRepository pointRepository = mock(PointRepository.class);
-        PointService pointService = new PointService(pointRepository);
-
         long userId = 1L;
 
         when(pointRepository.selectById(userId)).thenReturn(UserPoint.empty(userId));
@@ -156,9 +145,6 @@ public class PointServiceTest {
     void use_point_fail_if_minus(){
 
         // Given
-        PointRepository pointRepository = mock(PointRepository.class);
-        PointService pointService = new PointService(pointRepository);
-
         long userId = 1L;
 
         when(pointRepository.selectById(userId)).thenReturn(UserPoint.empty(userId));
@@ -174,9 +160,6 @@ public class PointServiceTest {
     void select_user_point_history_Success(){
 
         // Given
-        PointRepository pointRepository = mock(PointRepository.class);
-        PointService pointService = new PointService(pointRepository);
-
         long userId = 1L;
 
         // 테스트할 리스트
@@ -194,7 +177,5 @@ public class PointServiceTest {
         // Then
         assertEquals(2, histories.size()); // 크기 검증
         assertEquals(mockHistories, histories); // 내용 검증
-
-
     }
 }
