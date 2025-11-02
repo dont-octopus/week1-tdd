@@ -4,6 +4,8 @@ import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class PointRepository {
 
@@ -25,5 +27,9 @@ public class PointRepository {
 
     public void saveHistory(long userId, long amount, TransactionType type) {
         pointHistoryTable.insert(userId, amount, type, System.currentTimeMillis());
+    }
+
+    public List<PointHistory> findAllHistoriesByUserId(long userId) {
+        return pointHistoryTable.selectAllByUserId(userId);
     }
 }

@@ -7,6 +7,8 @@ import org.apache.catalina.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -165,5 +167,34 @@ public class PointServiceTest {
         assertThrows(IllegalArgumentException.class, () -> {
             pointService.usePoint(userId, -1000L);
         });
+    }
+
+    @Test
+    @DisplayName("특정 유저의 포인트 내역 조회 성공 테스트")
+    void select_user_point_history_Success(){
+
+        // Given
+        PointRepository pointRepository = mock(PointRepository.class);
+        PointService pointService = new PointService(pointRepository);
+
+        long userId = 1L;
+
+        // 테스트할 리스트
+        List<PointHistory> mockHistories = List.of(
+                new PointHistory(1L, userId, 3000L, TransactionType.CHARGE, System.currentTimeMillis()),
+                new PointHistory(2L, userId, 900L, TransactionType.USE, System.currentTimeMillis())
+        );
+
+        // stub
+        when(pointRepository.findAllHistoriesByUserId(userId)).thenReturn(mockHistories);
+
+        // When
+        List<PointHistory> histories = pointService.getPointHistory(userId);
+
+        // Then
+        assertEquals(2, histories.size()); // 크기 검증
+        assertEquals(mockHistories, histories); // 내용 검증
+
+
     }
 }
