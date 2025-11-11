@@ -1,0 +1,84 @@
+package io.hhplus.tdd.point;
+
+import io.hhplus.tdd.database.PointHistoryTable;
+import io.hhplus.tdd.database.UserPointTable;
+import org.apache.catalina.User;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PointService {
+
+    private final PointRepository pointRepository;
+
+    public PointService (PointRepository pointRepository) {
+       this.pointRepository = pointRepository;;
+    }
+
+    /**
+     * 포인트 충전
+     * @param userId
+     * @param amount
+     * @return
+     */
+    public UserPoint chargePoint(long userId, long amount) {
+        if(amount < 0) {
+            throw new IllegalArgumentException("음수는 입력할 수 없습니다.");
+        }
+
+        long currentPoint = pointRepository.selectById(userId).point();
+        long chargedPoint = currentPoint+ amount;
+        UserPoint updatedPoint = pointRepository.save(userId, chargedPoint);
+        pointRepository.saveHistory(userId, amount, TransactionType.CHARGE); // 기록 저장
+
+        return updatedPoint;
+    }
+
+    /**
+     * 특정 유저의 포인트 조회
+     * @param userId
+     * @return
+     */
+    public UserPoint selectPoint(long userId){
+        return pointRepository.selectById(userId);
+    }
+
+    /**
+     * 포인트 사용
+     * @param userId
+     * @param amount
+     * @return
+     */
+    public UserPoint usePoint(long userId, long amount) {
+
+        if(amount <= 0) {
+            throw new IllegalArgumentException("0이하 금액은 입력할 수 없습니다.");
+        }
+
+        UserPoint beforePoint = pointRepository.selectById(userId);
+        // 잔액이 사용하려는 포인트 보다 적은 경우 예외
+        if(beforePoint.point() < amount) {
+            throw new IllegalArgumentException("잔액이 부족합니다");
+        }
+
+        // 사용한 포인트 계산
+        long afterPoint = beforePoint.point() - amount;
+        // 사용 후 정보 DB에 저장
+        UserPoint updatedInfo = pointRepository.save(userId, afterPoint);
+        // 사용 내역 DB에 저장
+        pointRepository.saveHistory(userId, amount, TransactionType.USE);
+
+        return updatedInfo;
+    }
+
+    /**
+     * 특정 유저의 포인트 내역(기록) 조회
+     * @param userId
+     * @return
+     */
+    public List<PointHistory> getPointHistory(long userId) {
+        return pointRepository.findAllHistoriesByUserId(userId);
+    }
+
+}
